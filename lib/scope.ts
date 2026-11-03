@@ -294,8 +294,13 @@ class Scope extends EventEmitter {
     }
   }
 
-  filteringPath() {
-    this.transformPathFunction = this.buildFilter.apply(this, arguments as any)
+  filteringPath(regex: RegExp, replacement: string): this
+  filteringPath(fn: (path: string) => string): this
+  filteringPath(...args: any[]) {
+    this.transformPathFunction = (this.buildFilter as Function).apply(
+      this,
+      args,
+    )
     if (!this.transformPathFunction) {
       throw new Error(
         'Invalid arguments: filtering path should be a function or a regular expression',
@@ -304,10 +309,12 @@ class Scope extends EventEmitter {
     return this
   }
 
-  filteringRequestBody() {
-    this.transformRequestBodyFunction = this.buildFilter.apply(
+  filteringRequestBody(regex: RegExp, replacement: string): this
+  filteringRequestBody(fn: (body: string, recordedBody: string) => string): this
+  filteringRequestBody(...args: any[]) {
+    this.transformRequestBodyFunction = (this.buildFilter as Function).apply(
       this,
-      arguments as any,
+      args,
     )
     if (!this.transformRequestBodyFunction) {
       throw new Error(
